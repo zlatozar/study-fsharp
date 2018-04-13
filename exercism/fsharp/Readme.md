@@ -71,9 +71,10 @@ $ dotnet test
 
 ## Add dependencies
 
-If you need a library search in http://nuget.org
+If you need project specific library search in http://nuget.org
 
 ```plain
+$ cd <dotnet project>
 $ dotnet add package FsUnit --version 3.1.0
 ```
 
@@ -87,6 +88,7 @@ $ mono .paket/paket.exe add FsUnit --version 3.1.0
 
 $ mono .paket/paket.exe add xunit --version 2.4.0-beta.1.build3958
 $ mono .paket/paket.exe add xunit.runner.console --version 2.4.0-beta.1.build3958
+$ mono .paket/paket.exe add Microsoft.NETCore.Portable.Compatibility --version 1.0.1
 ```
 
 ## How to install Exercism
@@ -121,7 +123,7 @@ $ exercism submit <path to the F# file>
 $ exercism fetch
 ```
 
-## How to update Exercsism client
+## How to update Exercism client
 
 ```plain
 $ exercsism upgade
