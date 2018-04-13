@@ -1,5 +1,11 @@
 ﻿module Stock
 
+    // Learned in this challenge:
+    //     - how to split strings
+    //     - how to cast
+    //     - pattern matching on list and its content
+    //     - how to enumerate list - List.indexed
+    //     - destructing pair
     let stockData =
         [ "Date,Open,High,Low,Close,Volume,Adj Close";
           "2012-03-30,32.40,32.41,32.04,32.26,31749400,32.26";
@@ -27,7 +33,7 @@
           "2012-02-29,31.89,32.00,31.61,31.74,59323600,31.74"; ]
 
     // Slice lines using given symbol
-    let _sliceLine (ch:char) (line:string) =
+    let _sliceLine ch (line:string) =
         line.Split([|ch|])
 
     let selectDayPrices dayData =
@@ -36,16 +42,17 @@
     let _calculateMargin openPrice closePrice =
         abs((openPrice |> float) - (closePrice |> float))
 
-    // correct but do not return what is needed
+    // experiment with pattern matching
     let rec _biggestVariance days =
-        match List.length days with
-        | 1 -> days.[0] |> snd
-        | _ -> max (List.head days |> snd) (_biggestVariance (List.tail days))
+        match days with
+        | []        -> 0.0
+        | (_,v)::[] -> v
+        | (_,v)::xs -> max v (_biggestVariance xs)
 
     // Skip lines from a given range
     let skip (x,y) lst =
         List.indexed lst
-        |> List.filter (fun (idx,line) -> not(List.exists ((=) idx) [x..y]))
+        |> List.filter (fun (idx,_) -> not (List.exists ((=) idx) [x..y]))
 
     let dayMargin (dayPrices:string array) =
         (dayPrices.[0], _calculateMargin dayPrices.[1] dayPrices.[4])
@@ -62,6 +69,5 @@
         skip (0, 0) stockMarketData
         |> List.map createDayVariance
         |> selectVarinceDay
-        |> fst
 
-    let stockMarket = greatestVariance stockData
+    let stockMarket, _ = greatestVariance stockData
