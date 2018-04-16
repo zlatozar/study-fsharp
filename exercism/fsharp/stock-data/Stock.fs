@@ -1,10 +1,12 @@
 ﻿module Stock
 
     // Learned in this challenge:
-    //     - how to split strings
+    //     - strings slicing
     //     - how to cast
     //     - pattern matching on list and its content
     //     - how to enumerate list - List.indexed
+    //     - how to use List.fold
+    //     - how to nest functions
     //     - destructing pair
     let stockData =
         [ "Date,Open,High,Low,Close,Volume,Adj Close";
@@ -31,43 +33,34 @@
           "2012-03-02,32.31,32.44,32.00,32.08,47314200,32.08";
           "2012-03-01,31.93,32.39,31.85,32.29,77344100,32.29";
           "2012-02-29,31.89,32.00,31.61,31.74,59323600,31.74"; ]
+    
+    let sliceData (line:string) =
+        line.Split ','
 
-    // Slice lines using given symbol
-    let _sliceLine ch (line:string) =
-        line.Split([|ch|])
+    let calcMargin (dayPrices:string array) =
+        let findPriceVariance openPrice closePrice =
+            abs((openPrice |> float) - (closePrice |> float))
 
-    let selectDayPrices dayData =
-        _sliceLine ',' dayData
+        (dayPrices.[0], findPriceVariance dayPrices.[1] dayPrices.[4])
 
-    let _calculateMargin openPrice closePrice =
-        abs((openPrice |> float) - (closePrice |> float))
-
-    // experiment with pattern matching
+    // (not used)
+    // For a given list of calculated margins returns biggest
     let rec _biggestVariance days =
         match days with
         | []        -> 0.0
         | (_,v)::[] -> v
-        | (_,v)::xs -> max v (_biggestVariance xs)
+        | (_,v)::xs -> max v (_biggestVariance xs)  // reduce as leaving maximum
 
-    // Skip lines from a given range
-    let skip (x,y) lst =
-        List.indexed lst
-        |> List.filter (fun (idx,_) -> not (List.exists ((=) idx) [x..y]))
+    // Compare variance data
+    let dataComp = fun (a, b) (c, d) -> if b > d then (a, b) else (c, d)
+    
+    let createVarianceData dayMargin stockDay =
+        stockDay
+        |> sliceData
+        |> calcMargin
+        |> dataComp dayMargin
 
-    let dayMargin (dayPrices:string array) =
-        (dayPrices.[0], _calculateMargin dayPrices.[1] dayPrices.[4])
+    let selectBiggestDiference (data:string list) =
+        List.fold createVarianceData ("", 0.0) data.[1..]
 
-    let createDayVariance dayPrices =
-        snd dayPrices
-        |> selectDayPrices
-        |> dayMargin
-
-    let selectVarinceDay days =
-        List.fold (fun (a,b) (c,d) -> if b > d then (a,b) else (c,d)) ("", 0.0) days
-
-    let greatestVariance stockMarketData =
-        skip (0, 0) stockMarketData
-        |> List.map createDayVariance
-        |> selectVarinceDay
-
-    let stockMarket, _ = greatestVariance stockData
+    let stockMarket, _ = selectBiggestDiference stockData
