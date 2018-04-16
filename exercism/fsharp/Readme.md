@@ -1,5 +1,17 @@
 # Manage .net projects with ```dotnet cli``` and ```Visual Code```
 
+Install .net (SDK and runtime):
+
+NOTE: ```preview``` packages should be excluded
+
+```bash
+$ sudo sh -c 'echo -e "[packages-microsoft-com-prod]\nname=packages-microsoft-com-prod \nbaseurl=https://packages.microsoft.com/yumrepos/microsoft-rhel7.3-prod\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc\nexclude=*preview*" > /etc/yum.repos.d/dotnetdev.repo'
+
+# choose latest
+$ sudo yum install dotnet-runtime-2.0.6.x86_64
+$ sudo yum install dotnet-sdk-2.1.4.x86_6
+```
+
 Here is an example:
 
 ```bash
