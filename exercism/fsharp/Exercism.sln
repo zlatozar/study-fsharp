@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
@@ -8,6 +8,8 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Leap", "leap\Leap.fsproj", "{31B302B7-EB2B-4C16-91BB-505B182F1748}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Stock", "stock-data\Stock.fsproj", "{A93908BC-BECF-42B6-8074-8831FB3C8C01}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Bob", "bob\Bob.fsproj", "{A088BED1-FA21-4AE6-A150-9F32019CF7FE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,5 +60,17 @@ Global
 		{A93908BC-BECF-42B6-8074-8831FB3C8C01}.Release|x64.Build.0 = Release|Any CPU
 		{A93908BC-BECF-42B6-8074-8831FB3C8C01}.Release|x86.ActiveCfg = Release|Any CPU
 		{A93908BC-BECF-42B6-8074-8831FB3C8C01}.Release|x86.Build.0 = Release|Any CPU
+		{A088BED1-FA21-4AE6-A150-9F32019CF7FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A088BED1-FA21-4AE6-A150-9F32019CF7FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A088BED1-FA21-4AE6-A150-9F32019CF7FE}.Debug|x64.ActiveCfg = Debug|x64
+		{A088BED1-FA21-4AE6-A150-9F32019CF7FE}.Debug|x64.Build.0 = Debug|x64
+		{A088BED1-FA21-4AE6-A150-9F32019CF7FE}.Debug|x86.ActiveCfg = Debug|x86
+		{A088BED1-FA21-4AE6-A150-9F32019CF7FE}.Debug|x86.Build.0 = Debug|x86
+		{A088BED1-FA21-4AE6-A150-9F32019CF7FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A088BED1-FA21-4AE6-A150-9F32019CF7FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A088BED1-FA21-4AE6-A150-9F32019CF7FE}.Release|x64.ActiveCfg = Release|x64
+		{A088BED1-FA21-4AE6-A150-9F32019CF7FE}.Release|x64.Build.0 = Release|x64
+		{A088BED1-FA21-4AE6-A150-9F32019CF7FE}.Release|x86.ActiveCfg = Release|x86
+		{A088BED1-FA21-4AE6-A150-9F32019CF7FE}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 EndGlobal
