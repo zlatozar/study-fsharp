@@ -17,8 +17,21 @@ let collectMults upperBound  = fun mults ->
 //     - better use of |>
 //     - Set.empty
 //     - higher forder functions
+//     - start reading others solutions
 let sum (numbers: int list) (upperBound: int): int = 
     let multSet = collectMults upperBound
     match numbers with
     | []  -> 0
     | _   -> Set.fold Set.union Set.empty (multSet numbers) |> sumSetElm
+
+// EXERCISM solution: Seq is universal, study List, Set, Seq
+
+//let multiplesOf max n =
+//    [n..n..(max - 1)]
+
+//let sumOfMultiples numbers max =
+//    numbers
+//        |> Seq.map (multiplesOf max)
+//        |> Seq.concat
+//        |> Seq.distinct
+//        |> Seq.sum
