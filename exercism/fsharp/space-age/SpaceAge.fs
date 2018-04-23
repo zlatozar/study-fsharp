@@ -21,10 +21,6 @@ let factor planet =
     | Uranus  -> 84.016846
     | Neptune -> 164.79132
 
-// Learned in this challenge:
-//     - how to round
-//     - how to use types in pattern matching
-//     - 'm' at the end means 'decimal'
 let age (planet: Planet) (seconds: int64): float =
     let orbitalPeriod = 31557600.
     let planetOrbitalPeriod = factor planet
