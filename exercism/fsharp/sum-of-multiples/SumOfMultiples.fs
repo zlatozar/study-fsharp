@@ -12,8 +12,11 @@ let sumSetElm aSet =
 let collectMults upperBound mults =
     Set.map (numsSet upperBound) (Set.ofList mults)
 
+let unionAll sets =
+    Set.fold (Set.union) Set.empty sets
+
 let sum (numbers: int list) (upperBound: int): int = 
     let multSet = collectMults upperBound numbers
     match numbers with
     | []  -> 0
-    | _   -> Set.fold (Set.union) Set.empty multSet |> sumSetElm
+    | _   -> unionAll multSet |> sumSetElm

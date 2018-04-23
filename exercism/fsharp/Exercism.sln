@@ -18,6 +18,8 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Leap", "leap\Leap.fsproj", 
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Raindrops", "raindrops\Raindrops.fsproj", "{6C3077A2-1FE3-42EA-8783-953A0B770DD3}"
 EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Accumulate", "accumulate\Accumulate.fsproj", "{A363936D-033E-438D-AF54-5D48F48B85C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -124,6 +126,18 @@ Global
 		{6C3077A2-1FE3-42EA-8783-953A0B770DD3}.Release|x64.Build.0 = Release|Any CPU
 		{6C3077A2-1FE3-42EA-8783-953A0B770DD3}.Release|x86.ActiveCfg = Release|Any CPU
 		{6C3077A2-1FE3-42EA-8783-953A0B770DD3}.Release|x86.Build.0 = Release|Any CPU
+		{A363936D-033E-438D-AF54-5D48F48B85C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A363936D-033E-438D-AF54-5D48F48B85C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A363936D-033E-438D-AF54-5D48F48B85C5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A363936D-033E-438D-AF54-5D48F48B85C5}.Debug|x64.Build.0 = Debug|Any CPU
+		{A363936D-033E-438D-AF54-5D48F48B85C5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A363936D-033E-438D-AF54-5D48F48B85C5}.Debug|x86.Build.0 = Debug|Any CPU
+		{A363936D-033E-438D-AF54-5D48F48B85C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A363936D-033E-438D-AF54-5D48F48B85C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A363936D-033E-438D-AF54-5D48F48B85C5}.Release|x64.ActiveCfg = Release|Any CPU
+		{A363936D-033E-438D-AF54-5D48F48B85C5}.Release|x64.Build.0 = Release|Any CPU
+		{A363936D-033E-438D-AF54-5D48F48B85C5}.Release|x86.ActiveCfg = Release|Any CPU
+		{A363936D-033E-438D-AF54-5D48F48B85C5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,11 +1,12 @@
-# Learned from this challenge
+## Learned from this challenge
 
-	- trim string
-    - char funcitons
-    - convert string to sequence and manipulate it
+- trim string
+- char funcitons
+- convert string to sequence and manipulate it
 
 ## Learned during development
-    - function composition ```>>``` - use it if you have chain of operations on given input
+
+- function composition ```>>``` - use it if you have chain of operations on given input
 
 If we have a chain of functions in a row, how are they combined?
 

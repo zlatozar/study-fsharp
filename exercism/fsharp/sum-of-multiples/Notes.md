@@ -1,17 +1,13 @@
-# Learned from this challenge
+## Learned from this challenge
 
-    - discover ```Set``` functionality
-    - better use of ```|>```
-    - ```Set.empty```
-    - higher forder functions
-
-## Learned during development
-
-## Challenge notes
+- discover ```Set``` functionality
+- better use of ```|>```
+- ```Set.empty```
+- higher forder functions
 
 ## Elegant solution from EXERCISM community
 
-Tip: Seq is universal, study List, Set, Seq
+Tip: ```Seq``` is universal, study ```List``` and ```Set``` methods
 
 ```fsharp
 
