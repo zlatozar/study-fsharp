@@ -1,13 +1,20 @@
 ﻿module Raindrops
 
+let factorsOf upTo = 
+    List.filter (fun num -> (upTo % num) = 0) [1..upTo]
+
+let dropSound num sound = fun (lst, str) ->
+                            match List.contains num lst with
+                            | true -> (lst, str + sound)
+                            | _    -> (lst, str)
+
+let soundOf_3 = dropSound 3 "Pling"       
+let soundOf_5 = dropSound 5 "Plang"
+let soundOf_7 = dropSound 7 "Plong"
+
 let convert (number: int): string =
-    seq {
-        if number % 3 = 0 then
-            yield "Pling"
-        if number % 5 = 0 then
-            yield "Plang"
-        if number % 7 = 0 then
-            yield "Plong"
-    } |> String.concat ""
-      |> function | "" -> string(number)
-                  | s  -> s
+    (factorsOf number, "")
+    |> soundOf_3
+    |> soundOf_5
+    |> soundOf_7
+    |> snd

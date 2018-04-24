@@ -20,6 +20,8 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Raindrops", "raindrops\Rain
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Accumulate", "accumulate\Accumulate.fsproj", "{A363936D-033E-438D-AF54-5D48F48B85C5}"
 EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "GradeSchool", "grade-school\GradeSchool.fsproj", "{7FEF57FD-61F6-436D-B95F-D81FCF5D01BD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -138,6 +140,18 @@ Global
 		{A363936D-033E-438D-AF54-5D48F48B85C5}.Release|x64.Build.0 = Release|Any CPU
 		{A363936D-033E-438D-AF54-5D48F48B85C5}.Release|x86.ActiveCfg = Release|Any CPU
 		{A363936D-033E-438D-AF54-5D48F48B85C5}.Release|x86.Build.0 = Release|Any CPU
+		{7FEF57FD-61F6-436D-B95F-D81FCF5D01BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FEF57FD-61F6-436D-B95F-D81FCF5D01BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FEF57FD-61F6-436D-B95F-D81FCF5D01BD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7FEF57FD-61F6-436D-B95F-D81FCF5D01BD}.Debug|x64.Build.0 = Debug|Any CPU
+		{7FEF57FD-61F6-436D-B95F-D81FCF5D01BD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7FEF57FD-61F6-436D-B95F-D81FCF5D01BD}.Debug|x86.Build.0 = Debug|Any CPU
+		{7FEF57FD-61F6-436D-B95F-D81FCF5D01BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FEF57FD-61F6-436D-B95F-D81FCF5D01BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FEF57FD-61F6-436D-B95F-D81FCF5D01BD}.Release|x64.ActiveCfg = Release|Any CPU
+		{7FEF57FD-61F6-436D-B95F-D81FCF5D01BD}.Release|x64.Build.0 = Release|Any CPU
+		{7FEF57FD-61F6-436D-B95F-D81FCF5D01BD}.Release|x86.ActiveCfg = Release|Any CPU
+		{7FEF57FD-61F6-436D-B95F-D81FCF5D01BD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
