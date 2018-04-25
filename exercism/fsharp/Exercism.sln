@@ -22,6 +22,8 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Accumulate", "accumulate\Ac
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "GradeSchool", "grade-school\GradeSchool.fsproj", "{7FEF57FD-61F6-436D-B95F-D81FCF5D01BD}"
 EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CollatzConjecture", "collatz-conjecture\CollatzConjecture.fsproj", "{DA5CF1C3-287D-4739-9AAF-DC7BBA0818EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -152,6 +154,18 @@ Global
 		{7FEF57FD-61F6-436D-B95F-D81FCF5D01BD}.Release|x64.Build.0 = Release|Any CPU
 		{7FEF57FD-61F6-436D-B95F-D81FCF5D01BD}.Release|x86.ActiveCfg = Release|Any CPU
 		{7FEF57FD-61F6-436D-B95F-D81FCF5D01BD}.Release|x86.Build.0 = Release|Any CPU
+		{DA5CF1C3-287D-4739-9AAF-DC7BBA0818EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA5CF1C3-287D-4739-9AAF-DC7BBA0818EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA5CF1C3-287D-4739-9AAF-DC7BBA0818EA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DA5CF1C3-287D-4739-9AAF-DC7BBA0818EA}.Debug|x64.Build.0 = Debug|Any CPU
+		{DA5CF1C3-287D-4739-9AAF-DC7BBA0818EA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DA5CF1C3-287D-4739-9AAF-DC7BBA0818EA}.Debug|x86.Build.0 = Debug|Any CPU
+		{DA5CF1C3-287D-4739-9AAF-DC7BBA0818EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA5CF1C3-287D-4739-9AAF-DC7BBA0818EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA5CF1C3-287D-4739-9AAF-DC7BBA0818EA}.Release|x64.ActiveCfg = Release|Any CPU
+		{DA5CF1C3-287D-4739-9AAF-DC7BBA0818EA}.Release|x64.Build.0 = Release|Any CPU
+		{DA5CF1C3-287D-4739-9AAF-DC7BBA0818EA}.Release|x86.ActiveCfg = Release|Any CPU
+		{DA5CF1C3-287D-4739-9AAF-DC7BBA0818EA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
