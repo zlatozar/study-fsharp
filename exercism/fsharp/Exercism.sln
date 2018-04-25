@@ -24,6 +24,8 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "GradeSchool", "grade-school
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CollatzConjecture", "collatz-conjecture\CollatzConjecture.fsproj", "{DA5CF1C3-287D-4739-9AAF-DC7BBA0818EA}"
 EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ArmstrongNumbers", "armstrong-numbers\ArmstrongNumbers.fsproj", "{1F515C93-D2C6-4FA2-9B4B-5215B66A0FEA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -166,6 +168,18 @@ Global
 		{DA5CF1C3-287D-4739-9AAF-DC7BBA0818EA}.Release|x64.Build.0 = Release|Any CPU
 		{DA5CF1C3-287D-4739-9AAF-DC7BBA0818EA}.Release|x86.ActiveCfg = Release|Any CPU
 		{DA5CF1C3-287D-4739-9AAF-DC7BBA0818EA}.Release|x86.Build.0 = Release|Any CPU
+		{1F515C93-D2C6-4FA2-9B4B-5215B66A0FEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F515C93-D2C6-4FA2-9B4B-5215B66A0FEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F515C93-D2C6-4FA2-9B4B-5215B66A0FEA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1F515C93-D2C6-4FA2-9B4B-5215B66A0FEA}.Debug|x64.Build.0 = Debug|Any CPU
+		{1F515C93-D2C6-4FA2-9B4B-5215B66A0FEA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1F515C93-D2C6-4FA2-9B4B-5215B66A0FEA}.Debug|x86.Build.0 = Debug|Any CPU
+		{1F515C93-D2C6-4FA2-9B4B-5215B66A0FEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F515C93-D2C6-4FA2-9B4B-5215B66A0FEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F515C93-D2C6-4FA2-9B4B-5215B66A0FEA}.Release|x64.ActiveCfg = Release|Any CPU
+		{1F515C93-D2C6-4FA2-9B4B-5215B66A0FEA}.Release|x64.Build.0 = Release|Any CPU
+		{1F515C93-D2C6-4FA2-9B4B-5215B66A0FEA}.Release|x86.ActiveCfg = Release|Any CPU
+		{1F515C93-D2C6-4FA2-9B4B-5215B66A0FEA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
