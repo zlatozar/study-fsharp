@@ -29,11 +29,29 @@ school
 
 [F# book](https://en.wikibooks.org/wiki/F_Sharp_Programming) 
 
-## Elegant solution from EXERCISM community
-
 ```fsharp
 let grade (number: int) (school: School): string list = 
     school 
         |> Map.tryFind number 
         |> Option.defaultValue List.empty
+```
+
+## Elegant solution from EXERCISM community
+
+```fsharp
+let empty = Map.empty
+
+let roster s =
+  Map.toList s
+  |> List.sort
+
+let grade g s =
+  match Map.tryFind g s with
+  | Some x -> x
+  | _ -> []
+
+let add name g s =
+  let newList = List.sort (name::(grade g s))
+  Map.add g newList s
+
 ```
