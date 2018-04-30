@@ -9,4 +9,4 @@ let rec calcSteps n acc =
 let steps (number: int): int option = 
     match number with
     | n when n > 0 -> Some (calcSteps n 0)
-    | _          -> None
+    | _            -> None

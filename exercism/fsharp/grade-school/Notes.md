@@ -19,7 +19,7 @@ let school =
 ```fsharp
 List.sort (Map.toList school)
 
-// more fsharp-ish
+// more fsharp-ish start from right to left
 school 
         |> Map.toList
         |> List.sortBy fst

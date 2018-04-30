@@ -15,8 +15,6 @@
 - How to enumerate list - ```List.indexed```
 - Destructing with pairs
 
-## Elegant solution from EXERCISM community
-
 ```fsharp
 // For a given list of calculated margins returns biggest
 let rec _biggestVariance days =
