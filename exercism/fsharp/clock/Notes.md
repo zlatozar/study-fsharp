@@ -2,6 +2,7 @@
 
 - tuple decomposition
 - to use ```sprintf``` e.g ```sprintf "%i" 10```
+- ```h'``` is valid name
 
 ## Learned during development
 

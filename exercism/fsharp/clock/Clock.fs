@@ -25,17 +25,12 @@ let normalize rawHours rawMin =
         then ((24 + hours), (snd hourMinDeviation))
         else (hours, (snd hourMinDeviation))
  
-let humanDisplay clock =
-    let h, m = clock
-    sprintf "%02i:%02i" h m
- 
 let minOp f minutes clock =
     let h, m = clock
     let h', m' = correction minutes
     normalize (f h h') (f m m')
 
  //________________________________________________________
- // 
 
 let create hours minutes =
     normalize hours minutes
@@ -47,4 +42,5 @@ let subtract minutes clock =
     minOp (-) minutes clock
 
 let display clock = 
-    clock |> humanDisplay
+    let h, m = clock
+    sprintf "%02i:%02i" h m
