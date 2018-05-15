@@ -7,9 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<None Include="README.md" />
     <Compile Include="ArmstrongNumbers.fs" />
     <Compile Include="ArmstrongNumbersTest.fs" />
     <Compile Include="Program.fs" />
+	<None Include="Notes.md" />
   </ItemGroup>
 
   <ItemGroup>

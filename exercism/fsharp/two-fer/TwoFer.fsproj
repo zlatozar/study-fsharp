@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<None Include="README.md" />
     <Compile Include="TwoFer.fs" />
     <Compile Include="TwoFerTest.fs" />
     <Compile Include="Program.fs" />

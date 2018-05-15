@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="README.md" />
     <Compile Include="Accumulate.fs" />
     <Compile Include="AccumulateTest.fs" />
     <Compile Include="Program.fs" />

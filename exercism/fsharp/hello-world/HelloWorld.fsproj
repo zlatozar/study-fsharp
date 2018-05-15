@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<None Include="README.md" />
     <Compile Include="HelloWorld.fs" />
     <Compile Include="HelloWorldTest.fs" />
     <Compile Include="Program.fs" />

@@ -7,9 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<None Include="README.md" />
     <Compile Include="SpaceAge.fs" />
     <Compile Include="SpaceAgeTest.fs" />
     <Compile Include="Program.fs" />
+	<None Include="Notes.md" />
   </ItemGroup>
 
   <ItemGroup>
