@@ -1,5 +1,8 @@
 # Visual Studio files
 .vs
 
+# Rider
+.idea/
+
 # Paket
 paket-files

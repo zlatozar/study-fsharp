@@ -14,7 +14,7 @@ let soundOf_7 = dropSound 7 "Plong"
 
 let convert (number: int): string =
     (factorsOf number, "")
-    |> soundOf_3
-    |> soundOf_5
-    |> soundOf_7
-    |> snd
+        |> soundOf_3
+        |> soundOf_5
+        |> soundOf_7
+        |> snd

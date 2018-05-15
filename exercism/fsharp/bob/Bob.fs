@@ -23,8 +23,8 @@ let selectUpperCase sentence =
 let containsUpperCaseOnly sentence =
     let upper = selectUpperCase sentence
     if (String.length upper > 0)
-    then String.forall Char.IsUpper upper
-    else false
+        then String.forall Char.IsUpper upper
+        else false
 
 let isYelling sentence =
     not (isRegular sentence) && containsUpperCaseOnly sentence

@@ -36,7 +36,8 @@ let calcMargin (dayPrices:string array) =
     (dayPrices.[0], findPriceVariance dayPrices.[1] dayPrices.[4])
 
 // Compare variance data
-let dataComp = fun (a, b) (c, d) -> if b > d then (a, b) else (c, d)
+let dataComp = fun (a, b) (c, d) ->
+    if b > d then (a, b) else (c, d)
     
 let createVarianceData dayMargin stockDay =
     stockDay

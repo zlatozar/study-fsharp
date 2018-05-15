@@ -92,7 +92,7 @@ $ dotnet add package FsUnit --version 3.1.0
 
 ## Add dependency with paket
 
-See how paket should be configured per project here: https://fsprojects.github.io/Paket/installation.html
+See how paket should be configured ```dotnet cli``` [here](https://fsprojects.github.io/Paket/paket-and-dotnet-cli.html).
 
 ```plain
 $ mono .paket/paket.exe init
