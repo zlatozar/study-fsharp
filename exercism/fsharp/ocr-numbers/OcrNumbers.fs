@@ -14,7 +14,7 @@ let decodeDigit pix =
     | [" _ ";"|_|";" _|"] -> "9"
     | _                   -> "?"
 
-// all
+// all lines
 let checkOcrScan lst=
     if (List.length lst % 4 = 0) then Some lst
     else None
@@ -24,10 +24,10 @@ let rec sliceLines lst =
     else 
         [lst.[0..3]] @ (sliceLines lst.[4..])
 
-// every  
+// every line
 let checkOcrDigit lst =
     let ocrSize = 
-        List.exists (fun elm -> not (String.length elm % 3 = 0)) lst
+        List.exists (fun elm -> not ((String.length elm) % 3 = 0)) lst
     if (ocrSize) then None
     else Some lst
      
@@ -46,7 +46,7 @@ let formatDigits (lst: string list list) =
             List.append [ [lst.[0].[idx]] @ [lst.[1].[idx]] @ [lst.[2].[idx]] ] (recognizeLine (idx + 1))
     recognizeLine 0 
 
-// each
+// each digit
 let recognizeDigits digits =
     checkOcrDigit digits
         |> Option.map composeDigits
@@ -69,8 +69,9 @@ let revealNum digits =
 
 let display digits =
     match digits with 
-    | Some d -> Some (revealNum d)
-    | _      -> None
+    | Some [None]  -> None
+    | Some d       -> Some (revealNum d)
+    | _            -> None
 
 // main
 let convert input =

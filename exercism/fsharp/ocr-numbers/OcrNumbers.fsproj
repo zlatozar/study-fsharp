@@ -1,19 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-
   <ItemGroup>
-	<None Include="README.md" />
+    <None Include="README.md" />
     <Compile Include="OcrNumbers.fs" />
     <Compile Include="OcrNumbersTest.fs" />
     <Compile Include="Program.fs" />
-	<None Include="Notes.md" />
+    <None Include="Notes.md" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
     <PackageReference Include="xunit" Version="2.3.1" />
@@ -21,5 +17,4 @@
     <PackageReference Include="FsUnit.xUnit" Version="3.1.0" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
-
 </Project>
