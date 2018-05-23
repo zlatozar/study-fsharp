@@ -2,18 +2,19 @@ module OcrNumbers
 
 let decodeDigit pix =
     match pix with
-    | [" _ ";"| |";"|_|"] -> Some 0
-    | ["   ";"  |";"  |"] -> Some 1
-    | [" _ ";" _|";"|_ "] -> Some 2
-    | [" _ ";" _|";" _|"] -> Some 3
-    | ["   ";"|_|";"  |"] -> Some 4
-    | [" _ ";"|_ ";" _|"] -> Some 5
-    | [" _ ";"|_ ";"|_|"] -> Some 6
-    | [" _ ";"  |";"  |"] -> Some 7
-    | [" _ ";"|_|";"|_|"] -> Some 8
-    | [" _ ";"|_|";" _|"] -> Some 9
-    | _                   -> None
+    | [" _ ";"| |";"|_|"] -> "0"
+    | ["   ";"  |";"  |"] -> "1"
+    | [" _ ";" _|";"|_ "] -> "2"
+    | [" _ ";" _|";" _|"] -> "3"
+    | ["   ";"|_|";"  |"] -> "4"
+    | [" _ ";"|_ ";" _|"] -> "5"
+    | [" _ ";"|_ ";"|_|"] -> "6"
+    | [" _ ";"  |";"  |"] -> "7"
+    | [" _ ";"|_|";"|_|"] -> "8"
+    | [" _ ";"|_|";" _|"] -> "9"
+    | _                   -> "?"
 
+// all
 let checkOcrScan lst=
     if (List.length lst % 4 = 0) then Some lst
     else None
@@ -22,9 +23,8 @@ let rec sliceLines lst =
     if List.length lst = 0 then []
     else 
         [lst.[0..3]] @ (sliceLines lst.[4..])
-   
-// checkOcrScan ["    "] |> Option.map sliceLines |> ignore
-   
+
+// every  
 let checkOcrDigit lst =
     let ocrSize = 
         List.exists (fun elm -> not (String.length elm % 3 = 0)) lst
@@ -38,8 +38,6 @@ let composeDigits lst =
            [lst.[0..2]] @ (composeDigit lst.[3..])
     List.map composeDigit lst
     
-// checkOcrDigit ["   "; "  |"; "  |"; "   "] |> Option.map composeDigits |> ignore 
-           
 let formatDigits (lst: string list list) =
     let numOfDigits = List.length lst.[0] - 1
     let rec recognizeLine idx =
@@ -48,17 +46,35 @@ let formatDigits (lst: string list list) =
             List.append [ [lst.[0].[idx]] @ [lst.[1].[idx]] @ [lst.[2].[idx]] ] (recognizeLine (idx + 1))
     recognizeLine 0 
 
-// checkOcrDigit ["   "; "  |"; "  |"; "   "] |> Option.map composeDigits |> Option.map formatDigits |> ignore
-
+// each
 let recognizeDigits digits =
     checkOcrDigit digits
         |> Option.map composeDigits
         |> Option.map formatDigits
         |> Option.map (List.map decodeDigit)
 
-// recognizeDigits [ "   "; "  |"; "  |"; "   " ] |> ignore    
-        
+// output
+let reveal digits =
+    match digits with 
+    | Some d -> d
+    | _      -> [] 
+    
+let createNum digits =
+    let digitFragment = List.map (List.reduce (fun x y -> x + y)) digits
+    List.reduce (fun a b -> a + "," + b) digitFragment
+    
+let revealNum digits =
+    List.map reveal digits
+        |> createNum
+
+let display digits =
+    match digits with 
+    | Some d -> Some (revealNum d)
+    | _      -> None
+
+// main
 let convert input =
     checkOcrScan input
         |> Option.map sliceLines
         |> Option.map (List.map recognizeDigits)
+        |> display
