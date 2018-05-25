@@ -19,11 +19,6 @@ let checkOcrScan lst=
     if (List.length lst % 4 = 0) then Some lst
     else None
 
-let rec sliceLines lst =
-    if List.length lst = 0 then []
-    else 
-        [lst.[0..3]] @ (sliceLines lst.[4..])
-
 // every line
 let checkOcrDigit lst =
     let ocrSize = 
@@ -32,10 +27,10 @@ let checkOcrDigit lst =
     else Some lst
      
 let composeDigits lst =
-    let rec composeDigit lst =
-        if String.length lst = 0 then []
+    let rec composeDigit str =
+        if String.length str = 0 then []
         else 
-           [lst.[0..2]] @ (composeDigit lst.[3..])
+           [str.[0..2]] @ (composeDigit str.[3..])
     List.map composeDigit lst
     
 let formatDigits (lst: string list list) =
@@ -60,7 +55,7 @@ let reveal digits =
     | _      -> [] 
     
 let createNum digits =
-    let digitFragment = List.map (List.reduce (fun x y -> x + y)) digits
+    let digitFragment = List.map (List.reduce (+)) digits
     List.reduce (fun a b -> a + "," + b) digitFragment
     
 let revealNum digits =
@@ -69,13 +64,13 @@ let revealNum digits =
 
 let display digits =
     match digits with 
-    | Some [None]  -> None
-    | Some d       -> Some (revealNum d)
-    | _            -> None
+    | Some [None] -> None
+    | Some d      -> Some (revealNum d)
+    | _           -> None
 
 // main
 let convert input =
     checkOcrScan input
-        |> Option.map sliceLines
+        |> Option.map (List.chunkBySize 4)
         |> Option.map (List.map recognizeDigits)
         |> display

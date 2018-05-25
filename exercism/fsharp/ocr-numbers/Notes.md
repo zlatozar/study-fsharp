@@ -8,6 +8,10 @@
 
 - the difference between `map` and `reduce`
 
+- `List.chunkBySize` exist
+
+- helper expressions should be marked as `private`
+
 ```f#
 let display digits =
     match digits with 
@@ -27,6 +31,10 @@ let display digits =
 
 ## Elegant solution from EXERCISM community
 
+```f#
+let private isValidShape xs =
+    List.length xs % 4 = 0 && List.forall (fun sublist -> Seq.length sublist % 3 = 0) xs
+```
 Cheating a little bit but it's clever
 
 ```f#
