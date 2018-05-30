@@ -1,6 +1,6 @@
 ## Elegant solution from EXERCISM community
 
-```fsharp
+```f#
 let steps (number: int): int option =
     let rec stepsRec acc num =
         match num with

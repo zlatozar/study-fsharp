@@ -1,15 +1,15 @@
 ## Learned from this challenge
 
-- how to implement ```state machine``` in F#
+- how to implement `state machine` in F#
 - pattern matching with records
-- ```private``` usage
+- `private` usage
 - records constructor exist
 
 ## Learned during development
 
 I didn't know that this is possible
 
-```fsharp
+```f#
 
 let putOnTruck package = 
     {package with PackageStatus=OutForDelivery}
@@ -33,11 +33,11 @@ let signedFor package signature =
 
 ## Challenge notes
 
-- To use ```state machine``` that is the clue
+- To use `state machine` that is the clue
 
 ## Elegant solution from EXERCISM community
 
-```fsharp
+```f#
 module RobotSimulator
 
 type Bearing = North | South | East | West

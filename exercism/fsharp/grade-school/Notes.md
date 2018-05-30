@@ -1,22 +1,22 @@
 ## Learned from this challenge
 
-- ```type School = Map<int, string list>``` as type alias
-- how to compose functions with ```|>```
+- `type School = Map<int, string list>` as type alias
+- how to compose functions with `|>`
 
-```fsharp
+```f#
 let school =
         empty        
         |> add "Jennifer" 4
         |> add "Kareem" 6
  ```
- Function ```add``` has as last parameter ```School``` in this way we preset first two and the last one is
- set by ```|>```.
+ Function `add` has as last parameter `School` in this way we preset first two and the last one is
+ set by `|>`.
 
- - ```Map``` is list of pairs
- - Map in F# is immutable so ```Map.add``` return new one
- - ```Map.find`` throws an exception if there is no element with a given key
+ - `Map` is list of pairs
+ - Map in F# is immutable so `Map.add` return new one
+ - `Map.find` throws an exception if there is no element with a given key
 
-```fsharp
+```f#
 List.sort (Map.toList school)
 
 // more fsharp-ish start from right to left
@@ -29,7 +29,7 @@ school
 
 [F# book](https://en.wikibooks.org/wiki/F_Sharp_Programming) 
 
-```fsharp
+```f#
 let grade (number: int) (school: School): string list = 
     school 
         |> Map.tryFind number 
@@ -38,7 +38,7 @@ let grade (number: int) (school: School): string list =
 
 ## Elegant solution from EXERCISM community
 
-```fsharp
+```f#
 let empty = Map.empty
 
 let roster s =

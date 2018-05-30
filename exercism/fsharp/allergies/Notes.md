@@ -8,7 +8,7 @@
 ## Learned during development
 
 - search of patterns is the root of mathematics/programming
-- ```active patterns``` can't return more than 7 possibities
+- `active patterns` can't return more than 7 possibities
 
 ## Challenge notes
 

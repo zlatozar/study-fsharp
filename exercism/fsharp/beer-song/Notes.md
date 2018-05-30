@@ -1,10 +1,10 @@
 ## Learned from this challenge
 
-- how to use ```sprintf```
+- how to use `sprintf`
 
 ## Elegant solution from EXERCISM community
 
-```fsharp
+```f#
 let recite (startBottles: int) (takeDown: int) =
     let verse n =
         match n with

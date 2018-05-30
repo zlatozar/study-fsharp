@@ -1,12 +1,12 @@
 ## Learned from this challenge
 
-- ```string```(also other simpe types) is a function that converts passed paramter
+- `string`(also other simpe types) is a function that converts passed paramter
 - In F# it is possible to _inline_ function
-- ```pown``` works with ```int```s
+- `pown` works with `int`s
 
 ## Learned during development
 
-```fsharp
+```f#
 System.Char.GetNumericValue(x)
 ```
 
@@ -14,7 +14,7 @@ System.Char.GetNumericValue(x)
 
 ## Elegant solution from EXERCISM community
 
-```fsharp
+```f#
 let isArmstrongNumber (number: int): bool = 
     let list = number 
                |> string 

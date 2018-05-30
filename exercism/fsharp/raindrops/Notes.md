@@ -1,14 +1,14 @@
 ## Learned from this challenge
 
-- how to use ```seq {}```
-- how to use ```function expressions```
+- how to use `seq {}`
+- how to use `function expressions`
 - always is a good idea to see other solutions
 
 ## Elegant solution from EXERCISM community
 
-TIP: Note that you can use ```if...then```, ```else``` is missing.
+TIP: Note that you can use `if...then` in yield, `else` is missing.
 
-```fsharp
+```f#
 let convert (number: int): string =
     seq {
         if number % 3 = 0 then

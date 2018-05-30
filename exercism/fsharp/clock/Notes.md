@@ -1,8 +1,8 @@
 ## Learned from this challenge
 
 - tuple decomposition
-- to use ```sprintf``` e.g ```sprintf "%i" 10```
-- ```h'``` is valid name
+- to use `sprintf` e.g `sprintf "%i" 10`
+- `h'` is valid name
 
 ## Learned during development
 
@@ -14,9 +14,7 @@ How to calculate clock - cool algorithm is needed.
 
 # Elegant solution from EXERCISM community
 
-```fsharp
-module Clock
-
+```f#
 open System
 
 type Clock = int
