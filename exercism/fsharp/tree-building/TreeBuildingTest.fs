@@ -10,11 +10,11 @@ open TreeBuilding
 
 [<Fact>]
 let ``Compare notes`` () =
-    let t0 = Branch (0, [])
+    let t0 = Branch (0, ref [])
     let t1 = Leaf 1
-    let t2 = Branch (4, [Branch (5, [])])
+    let t2 = Branch (4, ref [Branch (5, ref [])])
 
-    let t3 = Branch (2, [Branch (3, [])])
+    let t3 = Branch (2, ref [Branch (3, ref [])])
 
     let inital =
         List.fold (fun lst el -> TreeBuilder.add el lst) List.empty<Tree> [t2; t1; t0]
@@ -28,37 +28,63 @@ let ``Compare notes`` () =
     List.item 3 sorted |> should equal t2
 
 [<Fact>]
-let ``Unite notes`` () =
-    let t0 = Branch (0, [])
-    let t1 = Leaf 1
-    let t2 = Branch (4, [Branch (5, [])])
+let ``Incomming record is parent`` () =
+    let t = [Branch (0, ref [Leaf 1;  Branch (2, ref [Leaf 3])])]
 
-    let t3 = Branch (2, [Branch (3, [])])
+    let treeBuilder = TreeBuilder.empty
+    treeBuilder.waitingParents.Add (10, t)
 
-    let sorted =
-        List.fold (fun lst el -> TreeBuilder.union [el] lst) List.empty<Tree> [t2; t1; t0; t3]
+    TreeBuilder.tryToBeParent treeBuilder {RecordId=10; ParentId=2}
+        |> should equal (Some (Branch (10, ref [Branch (0, ref [Leaf 1;  Branch (2, ref [Leaf 3])])])))
 
-    List.length sorted |> should equal 4
-    List.item 0 sorted |> should equal t0
-    List.item 1 sorted |> should equal t1
-    List.item 2 sorted |> should equal t3
-    List.item 3 sorted |> should equal t2
+[<Fact>]
+let ``Incomming record is a first leaf`` () =
+    let t = [Leaf 1]
+
+    let treeBuilder = TreeBuilder.empty
+    treeBuilder.waitingParents.Add (10, t)
+
+    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=20; ParentId=10} |> should be True
+    treeBuilder.waitingParents.[10] |> should equal [Leaf 1; Leaf 20]
+
+[<Fact>]
+let ``Incomming record is a nested leaf`` () =
+    let t = [Leaf 1]
+
+    let treeBuilder = TreeBuilder.empty
+    treeBuilder.waitingParents.Add (10, t)
+
+    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=20; ParentId=1} |> should be True
+    treeBuilder.waitingParents.[10] |> should equal [Branch (1, ref [Leaf 20])]
+
+[<Fact>]
+let ``Incomming record is a deep leaf`` () =
+    let t = [Branch (0, ref [Leaf 1;  Branch (2, ref [Leaf 3])])]
+
+    let treeBuilder = TreeBuilder.empty
+    treeBuilder.waitingParents.Add (10, t)
+
+    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=20; ParentId=2} |> should be True
+    treeBuilder.waitingParents.[10] |> should equal [Branch (0, ref [Leaf 1;  Branch (2, ref [Leaf 3; Leaf 20])])]
 
 [<Fact>]
 let ``Depth First Search`` () =
-    let t = Branch (0, [Leaf 1;  Branch (2, [Branch (3, [Branch (4, [Leaf 5])])])])
+    let t = [Branch (1, ref [Leaf 2;  Branch (3, ref [Branch (4, ref [Branch (5, ref [Leaf 6])])])]); Leaf 7; Branch (8, ref [Leaf 9])]
 
     let treeBuilder = TreeBuilder.empty
-    treeBuilder.subTree.Add (6, t)
+    treeBuilder.waitingParents.Add (10, t)
 
-    TreeBuilder.findParent {RecordId=6; ParentId=1} treeBuilder |> should equal (Some (Leaf 1))
-    TreeBuilder.findParent {RecordId=6; ParentId=2} treeBuilder |> should equal (Some (Branch (2, [Branch (3, [Branch (4, [Leaf 5])])])))
+    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=11; ParentId=1} |> should be True
+    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=21; ParentId=2} |> should be True
 
-    TreeBuilder.findParent {RecordId=6; ParentId=3} treeBuilder |> should equal (Some (Branch (3, [Branch (4, [Leaf 5])])))
-    TreeBuilder.findParent {RecordId=6; ParentId=4} treeBuilder |> should equal (Some (Branch (4, [Leaf 5])))
-    TreeBuilder.findParent {RecordId=6; ParentId=5} treeBuilder |> should equal (Some (Leaf 5))
+    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=31; ParentId=3} |> should be True
+    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=41; ParentId=4} |> should be True
+    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=51; ParentId=5} |> should be True
 
-    TreeBuilder.findParent {RecordId=6; ParentId=7} treeBuilder |> should equal None
+    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=71; ParentId=7} |> should be True
+    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=91; ParentId=9} |> should be True
+
+    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=10; ParentId=0} |> should be False
 
 [<Fact>]
 let ``One node`` () =
@@ -72,6 +98,17 @@ let ``One node`` () =
     isBranch tree |> should equal false
     recordId tree |> should equal 0
     children tree |> should be Empty
+
+[<Fact>]
+let ``Two nodes`` () =
+    let input =
+        [
+            { RecordId = 0; ParentId = 0 }
+            { RecordId = 1; ParentId = 0 }
+        ]
+    let tree = buildTree input
+
+    children tree |> should equal [(Leaf 1)]
 
 [<Fact>]
 let ``Three nodes in order`` () =
@@ -298,7 +335,7 @@ let ``Cycle directly`` () =
             - (1; 0)
                 - (4; 1)
 
-            (2; 2) // Parent id of incomming should be diffrent
+            (2; 2) // Parent and id of incomming should be diffrent
             (3; 2)
             (5; 2)
 
