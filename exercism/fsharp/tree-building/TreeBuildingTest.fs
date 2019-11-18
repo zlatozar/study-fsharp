@@ -28,23 +28,13 @@ let ``Compare notes`` () =
     List.item 3 sorted |> should equal t2
 
 [<Fact>]
-let ``Incomming record is parent`` () =
-    let t = [Branch (0, ref [Leaf 1;  Branch (2, ref [Leaf 3])])]
-
-    let treeBuilder = TreeBuilder.empty
-    treeBuilder.waitingParents.Add (10, t)
-
-    TreeBuilder.tryToBeParent treeBuilder {RecordId=10; ParentId=2}
-        |> should equal (Some (Branch (10, ref [Branch (0, ref [Leaf 1;  Branch (2, ref [Leaf 3])])])))
-
-[<Fact>]
 let ``Incomming record is a first leaf`` () =
     let t = [Leaf 1]
 
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (10, t)
 
-    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=20; ParentId=10} |> should be True
+    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=20; ParentId=10} |> should be True
     treeBuilder.waitingParents.[10] |> should equal [Leaf 1; Leaf 20]
 
 [<Fact>]
@@ -54,7 +44,7 @@ let ``Incomming record is a nested leaf`` () =
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (10, t)
 
-    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=20; ParentId=1} |> should be True
+    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=20; ParentId=1} |> should be True
     treeBuilder.waitingParents.[10] |> should equal [Branch (1, ref [Leaf 20])]
 
 [<Fact>]
@@ -64,7 +54,7 @@ let ``Incomming record is a deep leaf`` () =
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (10, t)
 
-    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=20; ParentId=2} |> should be True
+    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=20; ParentId=2} |> should be True
     treeBuilder.waitingParents.[10] |> should equal [Branch (0, ref [Leaf 1;  Branch (2, ref [Leaf 3; Leaf 20])])]
 
 [<Fact>]
@@ -74,17 +64,17 @@ let ``Depth First Search`` () =
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (10, t)
 
-    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=11; ParentId=1} |> should be True
-    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=21; ParentId=2} |> should be True
+    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=11; ParentId=1} |> should be True
+    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=21; ParentId=2} |> should be True
 
-    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=31; ParentId=3} |> should be True
-    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=41; ParentId=4} |> should be True
-    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=51; ParentId=5} |> should be True
+    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=31; ParentId=3} |> should be True
+    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=41; ParentId=4} |> should be True
+    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=51; ParentId=5} |> should be True
 
-    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=71; ParentId=7} |> should be True
-    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=91; ParentId=9} |> should be True
+    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=71; ParentId=7} |> should be True
+    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=91; ParentId=9} |> should be True
 
-    TreeBuilder.tryToBeLeaf treeBuilder {RecordId=10; ParentId=0} |> should be False
+    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=10; ParentId=0} |> should be False
 
 [<Fact>]
 let ``One node`` () =
