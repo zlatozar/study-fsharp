@@ -113,8 +113,7 @@ module TreeBuilder =
 
             | Branch (id, children) as parentBranch :: rest
                               -> if parentId = id then
-                                     let newOne = add branch !parentBranch.children
-                                     parentBranch.children := newOne
+                                     parentBranch.children := add branch !parentBranch.children
                                      true
                                  else if id > parentId then false
                                  else
@@ -126,8 +125,9 @@ module TreeBuilder =
         Seq.tryFind (fun (idx, children) -> innerLoop None idx children)
                             (values treeBuilder.waitingParents) |> Option.isSome
 
-    let tryToPlaceLeaf treeBuilder { RecordId=recId; ParentId=parentId } =
+    let tryToPlaceLeaf treeBuilder ({ RecordId=recId; ParentId=parentId } as record) =
 
+        // searching root
         let rec innerLoop (parent: Tree option) idx children =
             match children with
             | []              -> false
@@ -139,8 +139,10 @@ module TreeBuilder =
                                      | Some p -> let withoutParent = remove leaf !p.children
                                                  p.children := add (Branch(id, ref newLeaf)) withoutParent
 
-                                     | None   -> let oldBranch = treeBuilder.waitingParents.Item idx
-                                                 let newBranch = add (Leaf recId ) oldBranch
+                                     | None   -> let restBranch = treeBuilder.waitingParents.Item idx
+                                                                      |> remove leaf
+
+                                                 let newBranch = add (Branch (id, ref [Leaf recId])) restBranch
 
                                                  treeBuilder.waitingParents.Remove idx |> ignore
                                                  treeBuilder.waitingParents.Add (idx, newBranch)
@@ -151,8 +153,7 @@ module TreeBuilder =
 
             | Branch (id, children) as branch :: rest
                               -> if parentId = id then
-                                     let newOne = add (Leaf recId) !branch.children
-                                     branch.children := newOne
+                                     branch.children := add (Leaf recId) !branch.children
                                      true
                                  else if id > recId then false
                                  else
@@ -161,12 +162,21 @@ module TreeBuilder =
                                      if not found then innerLoop parent idx rest
                                      else found
 
-        if treeBuilder.waitingParents.ContainsKey parentId && recId = 0 then
+        if treeBuilder.waitingParents.ContainsKey parentId then
             let waitings = treeBuilder.waitingParents.Item parentId
 
-            let newBranch = Branch (0, ref waitings)
+            let newBranch = if rootRecord record then
+                                [Branch (0, ref waitings)]
+                            else
+                                if parentId = 0 && treeBuilder.hasRoot then
+                                    match waitings.[0] with
+                                    | Branch (_, children) -> add (Leaf recId) !children
+                                    | Leaf _               -> [Branch (0, ref [Leaf recId])]
+                                else
+                                    add (Leaf recId) waitings
+
             treeBuilder.waitingParents.Remove parentId |> ignore
-            treeBuilder.waitingParents.Add (parentId, [newBranch])
+            treeBuilder.waitingParents.Add (parentId, newBranch)
             true
 
         else
@@ -198,6 +208,7 @@ let buildTree (records: Record list) :Tree =
 
     let place treeBuilder ({ RecordId=recId; ParentId=parentId } as record) =
 
+        // waited
         if treeBuilder.waitingParents.ContainsKey recId then
             let children = treeBuilder.waitingParents.Item recId
             let newBranch = Branch (recId, ref children)

@@ -28,16 +28,6 @@ let ``Compare notes`` () =
     List.item 3 sorted |> should equal t2
 
 [<Fact>]
-let ``Waiting common parent`` () =
-    let t = [Leaf 1]
-
-    let treeBuilder = TreeBuilder.empty
-    treeBuilder.waitingParents.Add (10, t)
-
-    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=20; ParentId=10} |> should be True
-    treeBuilder.waitingParents.[10] |> should equal [Leaf 1; Leaf 20]
-
-[<Fact>]
 let ``Attach record first level waiting leaf`` () =
     let t = [Leaf 1]
 
@@ -154,13 +144,24 @@ let ``Root record comes later`` () =
 
 [<Fact>]
 let ``Root record already placed`` () =
-    let t = [Branch (0, ref [])]
+    let t = [Leaf 0]
 
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (0, t)
+    treeBuilder.hasRoot <- true
 
     TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=1; ParentId=0} |> should be True
     treeBuilder.waitingParents.[0] |> should equal [Branch (0, ref [Leaf 1])]
+
+[<Fact>]
+let ``Waiting common parent`` () =
+    let t = [Leaf 1]
+
+    let treeBuilder = TreeBuilder.empty
+    treeBuilder.waitingParents.Add (10, t)
+
+    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=20; ParentId=10} |> should be True
+    treeBuilder.waitingParents.[10] |> should equal [Leaf 1; Leaf 20]
 
 [<Fact>]
 let ``Depth First Search`` () =
