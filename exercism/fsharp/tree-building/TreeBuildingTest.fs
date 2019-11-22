@@ -274,6 +274,26 @@ let ``More than two children`` () =
     children tree |> List.item 2 |> recordId |> should equal 3
 
 [<Fact>]
+let ``Take and attach branch in a branch`` () =
+    let input =
+        [
+            { RecordId = 5; ParentId = 1 };
+            { RecordId = 4; ParentId = 1 };
+            { RecordId = 0; ParentId = 0 };
+            { RecordId = 1; ParentId = 0 };
+        ]
+    (*
+        (0, 0)
+            - (1, 0)
+                - (4, 1)
+                - (5, 1)
+
+    *)
+
+    let tree = buildTree input
+    isBranch tree |> should equal true
+
+[<Fact>]
 let ``Binary tree`` () =
     let input =
         [
@@ -285,6 +305,17 @@ let ``Binary tree`` () =
             { RecordId = 0; ParentId = 0 };
             { RecordId = 6; ParentId = 2 }
         ]
+
+        (*
+            (0, 0)
+                - (1, 0)
+                    - (4, 1)
+                    - (5, 1)
+                - (2, 0)
+                    - (3, 2)
+                    - (6, 2)
+
+        *)
 
     let tree = buildTree input
 

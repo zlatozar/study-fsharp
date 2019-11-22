@@ -122,7 +122,22 @@ module TreeBuilder =
                                      if not found then innerLoop parent idx rest
                                      else found
 
-        Seq.tryFind (fun (idx, children) -> innerLoop None idx children)
+        if treeBuilder.waitingParents.ContainsKey parentId then
+            let waitings = treeBuilder.waitingParents.Item parentId
+
+            let newBranch = if parentId = 0 && treeBuilder.hasRoot then
+                                match waitings.[0] with
+                                | Branch (_, children) -> [Branch (0, ref (add branch !children))]
+                                | Leaf _               -> [Branch (0, ref [branch])]
+                            else
+                                add branch waitings
+
+            treeBuilder.waitingParents.Remove parentId |> ignore
+            treeBuilder.waitingParents.Add (parentId, newBranch)
+            true
+
+        else
+            Seq.tryFind (fun (idx, children) -> innerLoop None idx children)
                             (values treeBuilder.waitingParents) |> Option.isSome
 
     let tryToPlaceLeaf treeBuilder ({ RecordId=recId; ParentId=parentId } as record) =
@@ -170,7 +185,7 @@ module TreeBuilder =
                             else
                                 if parentId = 0 && treeBuilder.hasRoot then
                                     match waitings.[0] with
-                                    | Branch (_, children) -> add (Leaf recId) !children
+                                    | Branch (_, children) -> [Branch (0, ref (add (Leaf recId) !children))]
                                     | Leaf _               -> [Branch (0, ref [Leaf recId])]
                                 else
                                     add (Leaf recId) waitings
@@ -182,6 +197,18 @@ module TreeBuilder =
         else
             Seq.tryFind (fun (idx, children) -> innerLoop None idx children)
                             (values treeBuilder.waitingParents) |> Option.isSome
+
+    let placeRoot treeBuilder record =
+        if not (rootRecord record) then failwith (sprintf "Given record %A is not root record" record)
+        else
+            if treeBuilder.waitingParents.ContainsKey 0 then
+                let waitings = treeBuilder.waitingParents.Item 0
+                let newBranch = [Branch (0, ref waitings)]
+
+                treeBuilder.waitingParents.Remove 0 |> ignore
+                treeBuilder.waitingParents.Add (0, newBranch)
+            else
+                treeBuilder.waitingParents.Add (0, [Leaf 0])
 
 // Helper functions
 
@@ -208,25 +235,21 @@ let buildTree (records: Record list) :Tree =
 
     let place treeBuilder ({ RecordId=recId; ParentId=parentId } as record) =
 
-        // waited
-        if treeBuilder.waitingParents.ContainsKey recId then
-            let children = treeBuilder.waitingParents.Item recId
-            let newBranch = Branch (recId, ref children)
-
-            if TreeBuilder.tryToPlaceLeaf treeBuilder record then
-                if not (rootRecord record) then failwith (sprintf "Indirect cycle was detected for record: %A" record)
-
-            else
-                // start waiting for parent
-                treeBuilder.waitingParents.Remove recId |> ignore
-                treeBuilder.waitingParents.Add (parentId, [newBranch])
-
+        if rootRecord record then TreeBuilder.placeRoot treeBuilder record
         else
-            if rootRecord record then
-                treeBuilder.waitingParents.Add (parentId, [Branch (recId, ref [])])
+            // Is waited parent record came?
+            if treeBuilder.waitingParents.ContainsKey recId then
+                let children = treeBuilder.waitingParents.Item recId
+                let newBranch = Branch (recId, ref children)
+
+                if TreeBuilder.tryToPlaceBranch treeBuilder parentId newBranch then
+                    treeBuilder.waitingParents.Remove recId |> ignore
+                else
+                    treeBuilder.waitingParents.Remove recId |> ignore
+                    treeBuilder.waitingParents.Add (recId, [newBranch])
             else
-                let leaf = TreeBuilder.tryToPlaceLeaf treeBuilder record
-                if not leaf then treeBuilder.waitingParents.Add (parentId, [Leaf recId])
+                if not (TreeBuilder.tryToPlaceLeaf treeBuilder record) then
+                    treeBuilder.waitingParents.Add (parentId, [Leaf recId])
 
     let buildTree record =
         validateRecord record
