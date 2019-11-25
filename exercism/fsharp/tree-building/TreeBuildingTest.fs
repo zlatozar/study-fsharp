@@ -9,32 +9,13 @@ open System
 open TreeBuilding
 
 [<Fact>]
-let ``Compare notes`` () =
-    let t0 = Branch (0, ref [])
-    let t1 = Leaf 1
-    let t2 = Branch (4, ref [Branch (5, ref [])])
-
-    let t3 = Branch (2, ref [Branch (3, ref [])])
-
-    let inital =
-        List.fold (fun lst el -> TreeBuilder.add el lst) List.empty<Tree> [t2; t1; t0]
-    let sorted = if t2 > t1 then TreeBuilder.add t3 inital
-                 else []
-
-    List.length sorted |> should equal 4
-    List.item 0 sorted |> should equal t0
-    List.item 1 sorted |> should equal t1
-    List.item 2 sorted |> should equal t3
-    List.item 3 sorted |> should equal t2
-
-[<Fact>]
 let ``Attach record first level waiting leaf`` () =
     let t = [Leaf 1]
 
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (10, t)
 
-    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=20; ParentId=1} |> should be True
+    TreeBuilder.placeLeaf treeBuilder 1 (Leaf 20) |> should be True
     treeBuilder.waitingParents.[10] |> should equal [Branch (1, ref [Leaf 20])]
 
 [<Fact>]
@@ -44,7 +25,7 @@ let ``Attach record first level waiting branch`` () =
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (10, t)
 
-    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=20; ParentId=1} |> should be True
+    TreeBuilder.placeLeaf treeBuilder 1 (Leaf 20) |> should be True
     treeBuilder.waitingParents.[10] |> should equal [Branch (1, ref [Leaf 2; Leaf 20])]
 
 [<Fact>]
@@ -54,7 +35,7 @@ let ``Attach record in a deep leaf`` () =
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (10, t)
 
-    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=20; ParentId=3} |> should be True
+    TreeBuilder.placeLeaf treeBuilder 3 (Leaf 20) |> should be True
     treeBuilder.waitingParents.[10] |> should equal [Branch (0, ref [Leaf 1;  Branch (2, ref [Branch (3, ref [Leaf 20])])])]
 
 [<Fact>]
@@ -64,7 +45,7 @@ let ``Attach record in a deep branch`` () =
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (10, t)
 
-    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=20; ParentId=2} |> should be True
+    TreeBuilder.placeLeaf treeBuilder 2 (Leaf 20) |> should be True
     treeBuilder.waitingParents.[10] |> should equal [Branch (0, ref [Leaf 1;  Branch (2, ref [Leaf 3; Leaf 20])])]
 
 [<Fact>]
@@ -74,7 +55,7 @@ let ``Attach Leaf in a Leaf`` () =
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (10, t)
 
-    TreeBuilder.tryToPlaceBranch treeBuilder 3 (Leaf 20) |> should be True
+    TreeBuilder.placeLeaf treeBuilder 3 (Leaf 20) |> should be True
     treeBuilder.waitingParents.[10] |> should equal [Branch (0, ref [Leaf 1;  Branch (2, ref [Branch (3, ref [Leaf 20])])])]
 
 [<Fact>]
@@ -84,7 +65,7 @@ let ``Attach Leaf in a Branch`` () =
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (10, t)
 
-    TreeBuilder.tryToPlaceBranch treeBuilder 3 (Branch (20, ref [Leaf 30])) |> should be True
+    TreeBuilder.placeLeaf treeBuilder 3 (Branch (20, ref [Leaf 30])) |> should be True
     treeBuilder.waitingParents.[10]
         |> should equal [Branch (0, ref [Leaf 1;  Branch (2, ref [Branch (3, ref [Branch (20, ref [Leaf 30])])])])]
 
@@ -95,7 +76,7 @@ let ``Attach Branch in a Leaf`` () =
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (10, t)
 
-    TreeBuilder.tryToPlaceBranch treeBuilder 2 (Leaf 20) |> should be True
+    TreeBuilder.placeLeaf treeBuilder 2 (Leaf 20) |> should be True
     treeBuilder.waitingParents.[10]
         |> should equal [Branch (0, ref [Leaf 1;  Branch (2, ref [Leaf 3; Leaf 20])])]
 
@@ -106,7 +87,7 @@ let ``Attach Branch in a Branch`` () =
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (10, t)
 
-    TreeBuilder.tryToPlaceBranch treeBuilder 2 (Branch (20, ref [Leaf 30])) |> should be True
+    TreeBuilder.placeLeaf treeBuilder 2 (Branch (20, ref [Leaf 30])) |> should be True
     treeBuilder.waitingParents.[10]
         |> should equal [Branch (0, ref [Leaf 1;  Branch (2, ref [Leaf 3; Branch (20, ref [Leaf 30])])])]
 
@@ -117,7 +98,7 @@ let ``Attach in a first level leaf`` () =
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (10, t)
 
-    TreeBuilder.tryToPlaceBranch treeBuilder 1 (Leaf 30) |> should be True
+    TreeBuilder.placeLeaf treeBuilder 1 (Leaf 30) |> should be True
     treeBuilder.waitingParents.[10]
         |> should equal [Branch (1, ref [Leaf 30])]
 
@@ -128,30 +109,59 @@ let ``Attach record in a first level branch`` () =
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (10, t)
 
-    TreeBuilder.tryToPlaceBranch treeBuilder 1 (Leaf 30) |> should be True
+    TreeBuilder.placeLeaf treeBuilder 1 (Leaf 30) |> should be True
     treeBuilder.waitingParents.[10]
         |> should equal [Branch (1, ref [Leaf 2; Leaf 30])]
 
 [<Fact>]
+let ``Waiting for root`` () =
+    let t = [Leaf 1]
+
+    let treeBuilder = TreeBuilder.empty
+    treeBuilder.waitingParents.Add (0, t)
+
+    TreeBuilder.group treeBuilder 0 (Leaf 2)
+    treeBuilder.waitingParents.[0] |> should equal [Leaf 1; Leaf 2]
+
+[<Fact>]
+let ``Root record already there`` () =
+    let t = [Leaf 0]
+
+    let treeBuilder = TreeBuilder.empty
+    treeBuilder.waitingParents.Add (0, t)
+
+    TreeBuilder.group treeBuilder 0 (Leaf 1)
+    treeBuilder.waitingParents.[0] |> should equal [Branch (0, ref [Leaf 1])]
+
+[<Fact>]
+let ``Root record already there and has children`` () =
+    let t = [Branch (0, ref [Leaf 2])]
+
+    let treeBuilder = TreeBuilder.empty
+    treeBuilder.waitingParents.Add (0, t)
+
+    TreeBuilder.group treeBuilder 0 (Leaf 1)
+    treeBuilder.waitingParents.[0] |> should equal [Branch (0, ref [Leaf 1; Leaf 2])]
+
+[<Fact>]
 let ``Root record comes later`` () =
+    let t = [Leaf 1]
+
+    let treeBuilder = TreeBuilder.empty
+    treeBuilder.waitingParents.Add (0, t)
+
+    TreeBuilder.group treeBuilder 0 (Leaf 0)
+    treeBuilder.waitingParents.[0] |> should equal [Branch (0, ref [Leaf 1])]
+
+[<Fact>]
+let ``Root record comes later 2`` () =
     let t = [Branch (1, ref [Leaf 2;  Branch (3, ref [Leaf 4])])]
 
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (0, t)
 
-    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=0; ParentId=0} |> should be True
+    TreeBuilder.group treeBuilder 0 (Leaf 0)
     treeBuilder.waitingParents.[0] |> should equal [Branch (0, ref [Branch (1, ref [Leaf 2;  Branch (3, ref [Leaf 4])])])]
-
-[<Fact>]
-let ``Root record already placed`` () =
-    let t = [Leaf 0]
-
-    let treeBuilder = TreeBuilder.empty
-    treeBuilder.waitingParents.Add (0, t)
-    treeBuilder.hasRoot <- true
-
-    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=1; ParentId=0} |> should be True
-    treeBuilder.waitingParents.[0] |> should equal [Branch (0, ref [Leaf 1])]
 
 [<Fact>]
 let ``Waiting common parent`` () =
@@ -160,7 +170,7 @@ let ``Waiting common parent`` () =
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (10, t)
 
-    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=20; ParentId=10} |> should be True
+    TreeBuilder.group treeBuilder 10 (Leaf 20)
     treeBuilder.waitingParents.[10] |> should equal [Leaf 1; Leaf 20]
 
 [<Fact>]
@@ -170,17 +180,17 @@ let ``Depth First Search`` () =
     let treeBuilder = TreeBuilder.empty
     treeBuilder.waitingParents.Add (10, t)
 
-    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=11; ParentId=1} |> should be True
-    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=21; ParentId=2} |> should be True
+    TreeBuilder.placeLeaf treeBuilder 1 (Leaf 11) |> should be True
+    TreeBuilder.placeLeaf treeBuilder 2 (Leaf 21) |> should be True
 
-    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=31; ParentId=3} |> should be True
-    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=41; ParentId=4} |> should be True
-    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=51; ParentId=5} |> should be True
+    TreeBuilder.placeLeaf treeBuilder 3 (Leaf 31) |> should be True
+    TreeBuilder.placeLeaf treeBuilder 4 (Leaf 41) |> should be True
+    TreeBuilder.placeLeaf treeBuilder 5 (Leaf 51) |> should be True
 
-    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=71; ParentId=7} |> should be True
-    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=91; ParentId=9} |> should be True
+    TreeBuilder.placeLeaf treeBuilder 7 (Leaf 71) |> should be True
+    TreeBuilder.placeLeaf treeBuilder 9 (Leaf 91) |> should be True
 
-    TreeBuilder.tryToPlaceLeaf treeBuilder {RecordId=10; ParentId=0} |> should be False
+    TreeBuilder.placeLeaf treeBuilder 0 (Leaf 10) |> should be False
 
 [<Fact>]
 let ``One node`` () =

@@ -41,13 +41,8 @@ type TreeBuilder =
     with
         static member empty = { hasRoot=false; waitingParents=new Dictionary<int, Tree list>() }
 
-let rootRecord { RecordId=recId; ParentId=parentId } =
-        if recId = 0 && parentId = 0 then
-            true
-        else false
-
-let markIfRoot treeBuilder record =
-        if rootRecord record then treeBuilder.hasRoot <- true
+let markIfRoot treeBuilder ({ RecordId=recId; ParentId=parentId } as record) =
+        if recId = 0 && parentId = 0 then treeBuilder.hasRoot <- true
         record
 
 let validateRecord ({ RecordId=id; ParentId=parentId } as record) =
@@ -67,16 +62,14 @@ let validateRecord ({ RecordId=id; ParentId=parentId } as record) =
 [<RequireQualifiedAccess>]
 module TreeBuilder =
 
-    let newBuilder = fun () -> TreeBuilder.empty
-
-    let rec remove elm lst =
+    let rec private remove elm lst =
         match lst with
         | h::t when h = elm -> t
         | h::t              -> h::remove elm t
         | _                 -> []
 
     // Add in sorted set
-    let rec add (node: Tree) (children: Tree list) =
+    let rec private add (node: Tree) (children: Tree list) =
         match children with
         | []       -> [node]
         | hd :: tl -> if node.id = hd.id then hd :: tl
@@ -84,131 +77,82 @@ module TreeBuilder =
                           if node.id < hd.id then node :: hd :: tl
                           else hd :: add node tl
 
-    let values (d: Dictionary<int, Tree list>) =
+    let private values (d: Dictionary<int, Tree list>) =
         seq {
             for kv in d do
                 yield (kv.Key, kv.Value)
         }
 
-    let tryToPlaceBranch treeBuilder parentId (branch: Tree) =
-
-        let rec innerLoop (parent: Tree option) idx children =
-            match children with
-            | []              -> false
-            | Leaf id as leaf :: rest
-                              -> if parentId = id then
-                                     match parent with
-                                     | Some p -> let withoutParent = remove leaf !p.children
-                                                 p.children := add (Branch(id, ref [branch])) withoutParent
-
-                                     | None   -> let newBranch = treeBuilder.waitingParents.Item idx
-                                                                     |> remove leaf
-                                                                     |> add (Branch (id, ref [branch]))
-                                                 treeBuilder.waitingParents.Remove idx |> ignore
-                                                 treeBuilder.waitingParents.Add (idx, newBranch)
-                                     true
-
-                                 else if id > parentId then false
-                                 else innerLoop parent idx rest
-
-            | Branch (id, children) as parentBranch :: rest
-                              -> if parentId = id then
-                                     parentBranch.children := add branch !parentBranch.children
-                                     true
-                                 else if id > parentId then false
-                                 else
-                                     let found = innerLoop (Some parentBranch) idx !children
-
-                                     if not found then innerLoop parent idx rest
-                                     else found
-
-        if treeBuilder.waitingParents.ContainsKey parentId then
-            let waitings = treeBuilder.waitingParents.Item parentId
-
-            let newBranch = if parentId = 0 && treeBuilder.hasRoot then
-                                match waitings.[0] with
-                                | Branch (_, children) -> [Branch (0, ref (add branch !children))]
-                                | Leaf _               -> [Branch (0, ref [branch])]
-                            else
-                                add branch waitings
-
-            treeBuilder.waitingParents.Remove parentId |> ignore
-            treeBuilder.waitingParents.Add (parentId, newBranch)
-            true
-
+    let private change treeBuilder idx (newBranch: Tree list) =
+        if treeBuilder.waitingParents.Remove idx then
+            treeBuilder.waitingParents.Add (idx, newBranch)
         else
-            Seq.tryFind (fun (idx, children) -> innerLoop None idx children)
-                            (values treeBuilder.waitingParents) |> Option.isSome
+            failwith (sprintf "Waitings do not include parentId=%i" idx)
 
-    let tryToPlaceLeaf treeBuilder ({ RecordId=recId; ParentId=parentId } as record) =
+    let newBuilder = fun () -> TreeBuilder.empty
 
-        // searching root
+    // waitings must conatain parentId
+    let group treeBuilder parentId (newLeaf: Tree) =
+        let waitings = treeBuilder.waitingParents.Item parentId
+
+        let newBranch = if parentId = 0 then
+                            match waitings.[0] with
+                            | Branch (_, children) -> if newLeaf.id = 0 then
+                                                          [Branch (0, ref waitings)]
+                                                      else
+                                                          // has root with children
+                                                          [Branch (0, ref (add newLeaf !children))]
+                            | Leaf id when id = 0   -> [Branch (0, ref [newLeaf])]
+                            | Leaf _ as leaf        -> if newLeaf.id = 0 then
+                                                          [Branch (0, ref [leaf])]
+                                                       else
+                                                          // wait for root
+                                                          add newLeaf waitings
+                        else
+                            add newLeaf waitings
+
+        change treeBuilder parentId newBranch
+
+    // waitings must contain recId
+    let wrap treeBuilder (newLeaf: Tree) =
+        let waitings = treeBuilder.waitingParents.Item newLeaf.id
+        Branch (newLeaf.id, ref waitings)
+
+    // parentId must not be part of waiting ids
+    let placeLeaf treeBuilder parentId (newBranch: Tree) =
+
         let rec innerLoop (parent: Tree option) idx children =
             match children with
             | []              -> false
             | Leaf id as leaf :: rest
                               -> if parentId = id then
-                                     let newLeaf = [Leaf recId]
-
                                      match parent with
                                      | Some p -> let withoutParent = remove leaf !p.children
-                                                 p.children := add (Branch(id, ref newLeaf)) withoutParent
+                                                 p.children := add (Branch(id, ref [newBranch])) withoutParent
 
                                      | None   -> let restBranch = treeBuilder.waitingParents.Item idx
                                                                       |> remove leaf
 
-                                                 let newBranch = add (Branch (id, ref [Leaf recId])) restBranch
-
-                                                 treeBuilder.waitingParents.Remove idx |> ignore
-                                                 treeBuilder.waitingParents.Add (idx, newBranch)
+                                                 let branch = add (Branch (id, ref [newBranch])) restBranch
+                                                 change treeBuilder idx branch
                                      true
 
-                                 else if id > recId then false
+                                 else if parentId < id then false
                                  else innerLoop parent idx rest
 
             | Branch (id, children) as branch :: rest
                               -> if parentId = id then
-                                     branch.children := add (Leaf recId) !branch.children
+                                     branch.children := add newBranch !branch.children
                                      true
-                                 else if id > recId then false
+                                 else if parentId < id then false
                                  else
                                      let found = innerLoop (Some branch) idx !children
 
                                      if not found then innerLoop parent idx rest
                                      else found
 
-        if treeBuilder.waitingParents.ContainsKey parentId then
-            let waitings = treeBuilder.waitingParents.Item parentId
-
-            let newBranch = if rootRecord record then
-                                [Branch (0, ref waitings)]
-                            else
-                                if parentId = 0 && treeBuilder.hasRoot then
-                                    match waitings.[0] with
-                                    | Branch (_, children) -> [Branch (0, ref (add (Leaf recId) !children))]
-                                    | Leaf _               -> [Branch (0, ref [Leaf recId])]
-                                else
-                                    add (Leaf recId) waitings
-
-            treeBuilder.waitingParents.Remove parentId |> ignore
-            treeBuilder.waitingParents.Add (parentId, newBranch)
-            true
-
-        else
-            Seq.tryFind (fun (idx, children) -> innerLoop None idx children)
-                            (values treeBuilder.waitingParents) |> Option.isSome
-
-    let placeRoot treeBuilder record =
-        if not (rootRecord record) then failwith (sprintf "Given record %A is not root record" record)
-        else
-            if treeBuilder.waitingParents.ContainsKey 0 then
-                let waitings = treeBuilder.waitingParents.Item 0
-                let newBranch = [Branch (0, ref waitings)]
-
-                treeBuilder.waitingParents.Remove 0 |> ignore
-                treeBuilder.waitingParents.Add (0, newBranch)
-            else
-                treeBuilder.waitingParents.Add (0, [Leaf 0])
+        Seq.tryFind (fun (idx, children) -> innerLoop None idx children)
+                        (values treeBuilder.waitingParents) |> Option.isSome
 
 // Helper functions
 
@@ -233,23 +177,23 @@ let buildTree (records: Record list) :Tree =
 
     let treeBuilder = TreeBuilder.empty
 
-    let place treeBuilder ({ RecordId=recId; ParentId=parentId } as record) =
+    let place treeBuilder { RecordId=recId; ParentId=parentId } =
+        let newLeaf = Leaf recId
 
-        if rootRecord record then TreeBuilder.placeRoot treeBuilder record
+        if treeBuilder.waitingParents.ContainsKey recId && recId <> 0 then
+            let newBranch = TreeBuilder.wrap treeBuilder newLeaf
+
+            if treeBuilder.waitingParents.ContainsKey parentId then
+                TreeBuilder.group treeBuilder parentId newLeaf
+
+            else if not (TreeBuilder.placeLeaf treeBuilder parentId newBranch) then
+                treeBuilder.waitingParents.Add (parentId, [newBranch])
+
+        else if treeBuilder.waitingParents.ContainsKey parentId then
+            TreeBuilder.group treeBuilder parentId newLeaf
+            // TODO: check for indirect cycles
         else
-            // Is waited parent record came?
-            if treeBuilder.waitingParents.ContainsKey recId then
-                let children = treeBuilder.waitingParents.Item recId
-                let newBranch = Branch (recId, ref children)
-
-                if TreeBuilder.tryToPlaceBranch treeBuilder parentId newBranch then
-                    treeBuilder.waitingParents.Remove recId |> ignore
-                else
-                    treeBuilder.waitingParents.Remove recId |> ignore
-                    treeBuilder.waitingParents.Add (recId, [newBranch])
-            else
-                if not (TreeBuilder.tryToPlaceLeaf treeBuilder record) then
-                    treeBuilder.waitingParents.Add (parentId, [Leaf recId])
+            treeBuilder.waitingParents.Add (parentId, [newLeaf])
 
     let buildTree record =
         validateRecord record
