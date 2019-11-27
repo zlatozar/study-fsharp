@@ -83,7 +83,7 @@ module TreeBuilder =
                 yield (kv.Key, kv.Value)
         }
 
-    let private change treeBuilder idx (newBranch: Tree list) =
+    let change treeBuilder idx (newBranch: Tree list) =
         if treeBuilder.waitingParents.Remove idx then
             treeBuilder.waitingParents.Add (idx, newBranch)
         else
@@ -96,18 +96,19 @@ module TreeBuilder =
         let waitings = treeBuilder.waitingParents.Item parentId
 
         let newBranch = if parentId = 0 then
-                            match waitings.[0] with
-                            | Branch (_, children) -> if newLeaf.id = 0 then
-                                                          [Branch (0, ref waitings)]
-                                                      else
-                                                          // has root with children
-                                                          [Branch (0, ref (add newLeaf !children))]
-                            | Leaf id when id = 0   -> [Branch (0, ref [newLeaf])]
-                            | Leaf _ as leaf        -> if newLeaf.id = 0 then
-                                                          [Branch (0, ref [leaf])]
-                                                       else
-                                                          // wait for root
-                                                          add newLeaf waitings
+                            match waitings with
+                            | []                      -> failwith (sprintf "Waiting with id=%i withwout children" parentId)
+                            | [Branch (_, children)] -> if newLeaf.id = 0 then
+                                                            [Branch (0, ref waitings)]
+                                                        else
+                                                            // has root with children
+                                                            [Branch (0, ref (add newLeaf !children))]
+                            | [Leaf id] when id = 0   -> [Branch (0, ref [newLeaf])]
+                            | _ as leaf               -> if newLeaf.id = 0 then
+                                                             [Branch (0, ref leaf)]
+                                                         else
+                                                             // wait for root
+                                                             add newLeaf waitings
                         else
                             add newLeaf waitings
 
@@ -151,7 +152,9 @@ module TreeBuilder =
                                      if not found then innerLoop parent idx rest
                                      else found
 
-        Seq.tryFind (fun (idx, children) -> innerLoop None idx children)
+        Seq.tryFind (fun (idx, children) -> if parentId < idx then
+                                                innerLoop None idx children
+                                            else false)
                         (values treeBuilder.waitingParents) |> Option.isSome
 
 // Helper functions
@@ -187,7 +190,7 @@ let buildTree (records: Record list) :Tree =
                 TreeBuilder.group treeBuilder parentId newLeaf
 
             else if not (TreeBuilder.placeLeaf treeBuilder parentId newBranch) then
-                treeBuilder.waitingParents.Add (parentId, [newBranch])
+                TreeBuilder.change treeBuilder recId [newBranch]
 
         else if treeBuilder.waitingParents.ContainsKey parentId then
             TreeBuilder.group treeBuilder parentId newLeaf
