@@ -83,6 +83,7 @@ module TreeBuilder =
                 yield (kv.Key, kv.Value)
         }
 
+    // replace waitings for given index
     let change treeBuilder idx (newBranch: Tree list) =
         if treeBuilder.waitingParents.Remove idx then
             treeBuilder.waitingParents.Add (idx, newBranch)
@@ -98,11 +99,10 @@ module TreeBuilder =
         let newBranch = if parentId = 0 then
                             match waitings with
                             | []                      -> failwith (sprintf "Waiting with id=%i withwout children" parentId)
-                            | [Branch (_, children)] -> if newLeaf.id = 0 then
-                                                            [Branch (0, ref waitings)]
-                                                        else
-                                                            // has root with children
-                                                            [Branch (0, ref (add newLeaf !children))]
+                            | [Branch (id, children)] when id = 0 -> if newLeaf.id = 0 then
+                                                                         [Branch (0, ref waitings)]
+                                                                     else
+                                                                         [Branch (0, ref (add newLeaf !children))]
                             | [Leaf id] when id = 0   -> [Branch (0, ref [newLeaf])]
                             | _ as leaf               -> if newLeaf.id = 0 then
                                                              [Branch (0, ref leaf)]
@@ -152,7 +152,7 @@ module TreeBuilder =
                                      if not found then innerLoop parent idx rest
                                      else found
 
-        Seq.tryFind (fun (idx, children) -> if parentId < idx then
+        Seq.tryFind (fun (idx, children) -> if idx = 0 || parentId < idx then
                                                 innerLoop None idx children
                                             else false)
                         (values treeBuilder.waitingParents) |> Option.isSome
@@ -180,28 +180,41 @@ let buildTree (records: Record list) :Tree =
 
     let treeBuilder = TreeBuilder.empty
 
-    let place treeBuilder { RecordId=recId; ParentId=parentId } =
-        let newLeaf = Leaf recId
-
-        if treeBuilder.waitingParents.ContainsKey recId && recId <> 0 then
-            let newBranch = TreeBuilder.wrap treeBuilder newLeaf
-
-            if treeBuilder.waitingParents.ContainsKey parentId then
-                TreeBuilder.group treeBuilder parentId newLeaf
-
-            else if not (TreeBuilder.placeLeaf treeBuilder parentId newBranch) then
-                TreeBuilder.change treeBuilder recId [newBranch]
-
-        else if treeBuilder.waitingParents.ContainsKey parentId then
-            TreeBuilder.group treeBuilder parentId newLeaf
-            // TODO: check for indirect cycles
+    let placeRecId treeBuilder { RecordId=recId; ParentId=parentId } =
+        if treeBuilder.waitingParents.ContainsKey recId then
+            let branch = TreeBuilder.wrap treeBuilder (Leaf recId)
+            if recId = 0 then // place root record
+                TreeBuilder.change treeBuilder 0 [branch]
+                None
+            else
+                treeBuilder.waitingParents.Remove recId |> ignore
+                Some (parentId, branch)
         else
-            treeBuilder.waitingParents.Add (parentId, [newLeaf])
+            Some (parentId, Leaf recId)
+
+    let checkIndirectCycles treeBuilder (placedRecord: (int*Tree) option) =
+        match placedRecord with
+        | None                    -> ()
+        | Some (parentId, branch) -> if TreeBuilder.placeLeaf treeBuilder parentId branch then // just check do not place
+                                         failwith "Indirect cycle"
+
+    let processParentId treeBuilder (newBranch: (int*Tree) option) =
+        match newBranch with
+        | None                    -> ()
+        | Some (parentId, branch) -> if treeBuilder.waitingParents.ContainsKey parentId then
+                                         TreeBuilder.group treeBuilder parentId branch
+
+                                     else
+                                        if TreeBuilder.placeLeaf treeBuilder parentId branch then
+                                            treeBuilder.waitingParents.Remove parentId |> ignore
+                                        else
+                                            treeBuilder.waitingParents.Add (parentId, [branch])
 
     let buildTree record =
         validateRecord record
             |> markIfRoot treeBuilder
-            |> place treeBuilder
+            |> placeRecId treeBuilder
+            |> processParentId treeBuilder
 
     // TODO: Check for detached nodes
 
