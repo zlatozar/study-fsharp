@@ -59,6 +59,15 @@ let validateRecord ({ RecordId=id; ParentId=parentId } as record) =
     idShouldBigger; idDifferParentId
     record
 
+let validateOutput treeBuilder =
+    let root =
+        if not treeBuilder.hasRoot then failwith "There is no root element."
+
+    let detached =
+        if treeBuilder.waitingParents.Count > 1 then failwith "There is detached branches."
+
+    root; detached
+
 [<RequireQualifiedAccess>]
 module TreeBuilder =
 
@@ -77,7 +86,7 @@ module TreeBuilder =
                           if node.id < hd.id then node :: hd :: tl
                           else hd :: add node tl
 
-    let private values (d: Dictionary<int, Tree list>) =
+    let private elements (d: Dictionary<int, Tree list>) =
         seq {
             for kv in d do
                 yield (kv.Key, kv.Value)
@@ -115,9 +124,9 @@ module TreeBuilder =
         change treeBuilder parentId newBranch
 
     // waitings must contain recId
-    let wrap treeBuilder (newLeaf: Tree) =
-        let waitings = treeBuilder.waitingParents.Item newLeaf.id
-        Branch (newLeaf.id, ref waitings)
+    let wrap treeBuilder (wrapper: Tree) =
+        let waitings = treeBuilder.waitingParents.Item wrapper.id
+        Branch (wrapper.id, ref waitings)
 
     // parentId must not be part of waiting ids
     let placeLeaf treeBuilder parentId (newBranch: Tree) =
@@ -155,7 +164,18 @@ module TreeBuilder =
         Seq.tryFind (fun (idx, children) -> if idx = 0 || parentId < idx then
                                                 innerLoop None idx children
                                             else false)
-                        (values treeBuilder.waitingParents) |> Option.isSome
+                        (elements treeBuilder.waitingParents) |> Option.isSome
+
+    let rec containsId idx (branch: Tree) =
+        match branch with
+        | Leaf id           -> if idx = id then true else false
+
+        | Branch (id, children)
+                            -> if idx = id then true
+                                   else if idx < id then false
+                                   else
+                                       List.tryFind (fun leaf -> containsId idx leaf) !children
+                                           |> Option.isSome
 
 // Helper functions
 
@@ -192,11 +212,13 @@ let buildTree (records: Record list) :Tree =
         else
             Some (parentId, Leaf recId)
 
-    let checkIndirectCycles treeBuilder (placedRecord: (int*Tree) option) =
+    let checkIndirectCycles (placedRecord: (int*Tree) option) =
         match placedRecord with
-        | None                    -> ()
-        | Some (parentId, branch) -> if TreeBuilder.placeLeaf treeBuilder parentId branch then // just check do not place
+        | None                    -> placedRecord
+        | Some (parentId, branch) -> if TreeBuilder.containsId parentId branch then
                                          failwith "Indirect cycle"
+                                     else
+                                         placedRecord
 
     let processParentId treeBuilder (newBranch: (int*Tree) option) =
         match newBranch with
@@ -216,8 +238,8 @@ let buildTree (records: Record list) :Tree =
             |> placeRecId treeBuilder
             |> processParentId treeBuilder
 
-    // TODO: Check for detached nodes
-
     List.iter buildTree records
+
+    validateOutput treeBuilder
 
     treeBuilder.waitingParents.[0].[0]

@@ -421,6 +421,19 @@ let ``Tricky Unbalanced tree`` () =
     let tree = buildTree input
     isBranch tree |> should equal true
 
+[<Fact>]
+let ``Branch id search`` () =
+    let t = Branch (1, ref [Leaf 2;  Branch (3, ref [Branch (4, ref [Branch (5, ref [Leaf 6])])])])
+
+    TreeBuilder.containsId 1 t |> should be True
+    TreeBuilder.containsId 2 t |> should be True
+    TreeBuilder.containsId 3 t |> should be True
+    TreeBuilder.containsId 4 t |> should be True
+    TreeBuilder.containsId 5 t |> should be True
+    TreeBuilder.containsId 6 t |> should be True
+
+    TreeBuilder.containsId 7 t |> should be False
+
 // Type of errors
 
 // 1. Validate input
@@ -520,13 +533,8 @@ let ``Non-continuous`` () =
             { RecordId = 1; ParentId = 0 };
             { RecordId = 0; ParentId = 0 }
         ]
-    (fun () -> buildTree input |> ignore) |> should throw typeof<Exception>
 
-    (*
-        (0; 0)
-            - (1; 0)
-        ------------ detached
-        (2; 0)
-            - (4; 2)
+    let tree = buildTree input
+    tree |> should equal (Branch (0, ref [Leaf 1; Branch (2, ref [Leaf 4])]))
 
-    *)
+    (* Bug in the project was found. https://github.com/exercism/fsharp/issues/757 *)
