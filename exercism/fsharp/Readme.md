@@ -12,7 +12,36 @@ $ sudo yum install dotnet-runtime-2.0.6.x86_64
 $ sudo yum install dotnet-sdk-2.1.4.x86_6
 ```
 
-Here is an example:
+Here is an examples:
+
+```bash
+# simple project
+dotnet new console -f netcoreapp2.0 -lang f# -o SomeName
+```
+Your `.fsproj` should look something like:
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+	<None Include="README.md" />
+    <Compile Include="First.fs" />
+    <Compile Include="Second.fs" />
+    <Compile Include="Program.fs" />
+	<None Include="Notes.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <PackageReference Include="FsUnit.xUnit" Version="3.1.0" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+  </ItemGroup>
+</Project>
+```
 
 ```bash
 

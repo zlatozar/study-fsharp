@@ -6,3 +6,5 @@
 ## Learned during development
 
 - `[| |]` empty array
+- `val f: int -> int -> int -> int` is a simplified shorthand for `val f: int -> (int -> (int -> int))`
+
