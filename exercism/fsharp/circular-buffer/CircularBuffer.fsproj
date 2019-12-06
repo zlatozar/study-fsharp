@@ -7,10 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="README.md" />
-    <Compile Include="TreeBuilding.fs" />
-    <Compile Include="TreeBuildingTest.fs" />
-    <None Include="Notes.md" />
+    <Compile Include="CircularBuffer.fs" />
+    <Compile Include="CircularBufferTest.fs" />
   </ItemGroup>
 
   <ItemGroup>

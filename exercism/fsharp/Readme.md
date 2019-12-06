@@ -27,11 +27,11 @@ Your `.fsproj` should look something like:
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-	<None Include="README.md" />
+    <None Include="README.md" />
     <Compile Include="First.fs" />
     <Compile Include="Second.fs" />
     <Compile Include="Program.fs" />
-	<None Include="Notes.md" />
+    <None Include="Notes.md" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
@@ -65,42 +65,6 @@ $ dotnet new sln
 $ dotnet sln StudyFSharp.sln add TestDemo.Core/TestDemo.Core.fsproj
 $ dotnet sln StudyFSharp.sln add TestDemo.Tests/TestDemo.Tests.fsproj
 $ dotnet build StudyFSharp.sln
-
-$ mkdir .vscode
-$ emacs .vscode/tasks.json
-```
-
-This task calls out to .NET Core 2.0 CLI to run tests.
-```json
-{
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "Tests",
-            "command": "dotnet",
-            "type": "shell",
-            "args": [
-                "test"
-            ],
-            "presentation": {
-                "reveal": "silent"
-            },
-            "problemMatcher": "$msCompile",
-            "group": {
-                "kind": "test",
-                "isDefault": true
-            }
-        }
-    ]
-}
-```
-
-Add a keybinding in _keybindings.json_
-
-```json
-{   "key": "ctrl+shift+r",
-    "command": "workbench.action.tasks.test"
-}
 ```
 
 ```bash

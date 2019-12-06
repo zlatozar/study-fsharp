@@ -206,6 +206,5 @@ let children t =
     | Branch (_, c) -> !c
     | Leaf _        -> []
 
-// Main
 let buildTree (records: Record list) :Tree =
     TreeConstructor().construct records
