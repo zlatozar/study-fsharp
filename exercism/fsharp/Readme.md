@@ -12,6 +12,8 @@ $ sudo yum install dotnet-runtime-2.0.6.x86_64
 $ sudo yum install dotnet-sdk-2.1.4.x86_6
 ```
 
+Video is [here](https://www.youtube.com/watch?v=Ar20aMQxR7I)
+
 Here is an examples:
 
 ```bash
@@ -96,6 +98,8 @@ $ mono .paket/paket.exe add xunit.runner.console --version 2.4.0-beta.1.build395
 $ mono .paket/paket.exe add Microsoft.NETCore.Portable.Compatibility --version 1.0.1
 ```
 
+Video is [here](https://www.youtube.com/watch?v=6ga1nu0BgCs)
+
 ## How to install Exercism
 
 ```plain
@@ -133,3 +137,15 @@ $ exercism fetch
 ```plain
 $ exercsism upgade
 ```
+
+## VS Code
+
+Install the `Ionide` package for F# development
+```
+code --install-extension  Ionide.Ionide-fsharp
+```
+
+Finally we need to configure `Ionide` to use `dotnet core` rather than `mono`.
+Open up `VS Code` and navigate to `File -> Preferences`. Search for setting
+`FSharp.fsacRuntime` by default it has value _"net"_ which corresponds to `mono`.
+Change this value to _"netcore"_ and **restart** VS Code.

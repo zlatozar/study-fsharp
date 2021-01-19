@@ -56,6 +56,8 @@ let private elements (d: Dictionary<int, Tree list>) =
             yield (kv.Key, kv.Value)
     }
 
+// let (===) = fun x y -> Object.ReferenceEquals(x,y)
+
 // Domain logic
 
 let idOutOfRange max ({ RecordId=recId; ParentId=_ } as record) =
