@@ -1,15 +1,8 @@
-# Manage .net projects with ```dotnet cli``` and ```Visual Code```
-
-Install .net (SDK and runtime):
-
-NOTE: ```preview``` packages should be excluded
+## Install .net (SDK and runtime):
 
 ```bash
-$ sudo sh -c 'echo -e "[packages-microsoft-com-prod]\nname=packages-microsoft-com-prod \nbaseurl=https://packages.microsoft.com/yumrepos/microsoft-rhel7.3-prod\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc\nexclude=*preview*" > /etc/yum.repos.d/dotnetdev.repo'
-
 # choose latest
-$ sudo yum install dotnet-runtime-2.0.6.x86_64
-$ sudo yum install dotnet-sdk-2.1.4.x86_6
+$ sudo dnf install dotnet-sdk-5.0
 ```
 
 Video is [here](https://www.youtube.com/watch?v=Ar20aMQxR7I)
@@ -18,14 +11,14 @@ Here is an examples:
 
 ```bash
 # simple project
-dotnet new console -f netcoreapp2.0 -lang f# -o SomeName
+dotnet new console -f net5.0 -lang f# -o SomeName
 ```
 Your `.fsproj` should look something like:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
@@ -54,7 +47,6 @@ $ dotnet new xunit -lang f# -o TestDemo.Tests
 $ dotnet add TestDemo.Tests/TestDemo.Tests.fsproj reference TestDemo.Core/TestDemo.Core.fsproj
 
 $ cd TestDemo.Core/
-$ dotnet restore build
 $ dotnet restore
 $ dotnet build
 
@@ -69,11 +61,9 @@ $ dotnet sln StudyFSharp.sln add TestDemo.Tests/TestDemo.Tests.fsproj
 $ dotnet build StudyFSharp.sln
 ```
 
-```bash
+```plain
 $ cd TestDemo.Tests/
 $ dotnet test
-
-# or ctrl+shift+r from Visual Code
 ```
 
 ## Add dependencies
@@ -99,53 +89,3 @@ $ mono .paket/paket.exe add Microsoft.NETCore.Portable.Compatibility --version 1
 ```
 
 Video is [here](https://www.youtube.com/watch?v=6ga1nu0BgCs)
-
-## How to install Exercism
-
-```plain
-
-$ tar -xzvf exercism-linux-64bit.tgz
-$ rm exercism-linux-64bit.tgz
-$ mv exercism ~/bin
-
-$ exercism configure --key=
-$ mkdir -p ~/.config/exercism/
-$ curl http://cli.exercism.io/shell/exercism\_completion.bash > ~/.config/exercism/exercism\_completion.bash
- emacs ~/.config/exercism/exercism_completion.bash
-```
-
-```bash
-if [ -f ~/.config/exercism/exercism_completion.bash ]; then
-  . ~/.config/exercism/exercism_completion.bash
-fi
-```
-
-## How to work with Exercism
-
-```plain
-$ exercism restore
-$ exercism fetch
-
-Go to the new directory and read Readme.md
-
-$ exercism submit <path to the F# file>
-$ exercism fetch
-```
-
-## How to update Exercism client
-
-```plain
-$ exercsism upgade
-```
-
-## VS Code
-
-Install the `Ionide` package for F# development
-```
-code --install-extension  Ionide.Ionide-fsharp
-```
-
-Finally we need to configure `Ionide` to use `dotnet core` rather than `mono`.
-Open up `VS Code` and navigate to `File -> Preferences`. Search for setting
-`FSharp.fsacRuntime` by default it has value _"net"_ which corresponds to `mono`.
-Change this value to _"netcore"_ and **restart** VS Code.
